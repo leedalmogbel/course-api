@@ -1,0 +1,190 @@
+const Model = require('./Model');
+const Exception = require('./../Util/BaseException');
+const md5 = require('md5');
+const StoreModel = require('@module/Store/Model');
+const Store = require('@module/Store');
+
+module.exports = class Service extends Model {
+  /**
+   * Class constructor
+   */
+  constructor () {
+    super();
+
+    // class constants and variables
+    this.LOGIN_FAILED = 'Login failed.';
+    this.CREATE_FAILED = 'Create user failed.';
+    this.UPDATE_FAILED = 'Update user failed.';
+  }
+
+  /**
+   * Overrides model name
+   */
+  get modelName () {
+    // by default, modelName is the class name
+    // we should override Service classes to return the appropriate modelName
+    // which is the parent class
+    return Object.getPrototypeOf(this.constructor).name;
+  }
+
+  /**
+   * Create Merchant
+   * 
+   * @param {Object} data
+   * @param {file} image
+   */
+  async createMerchant (data, image) {
+    // validate
+    const errors = this.getCreateErrors(data);
+    if (Object.keys(errors).length > 0) {
+      throw Exception.setValidations(
+        this.CREATE_FAILED,
+        errors
+      );
+    }
+
+    // check if user exist
+    let exists = await this.getUserByEmail(data.user_slug);
+
+    // throw error if email already exists
+    if (Object.keys(exists).length > 0) {
+      throw Exception.setValidations(
+        this.CREATE_FAILED,
+        { user_slug: 'Email already exists'}
+      );
+    }
+
+    data.user_type = 'merchant';
+    // encrypt password
+    data.user_password = md5(data.user_password);
+
+    let user = Model.build(data);
+
+    let userObj = await user.save();
+    
+    // return
+    return userObj;
+  }
+
+  /**
+   * Update Merchant
+   * 
+   * @param {object} data
+   */
+  async updateMerchant (data) {
+
+    // validate fields
+    const errors = this.getUpdateErrors(data);
+    if (Object.keys(errors).length > 0) {
+      throw Exception.setValidations(this.UPDATE_FAILED, errors);
+    }
+
+    // check if valid merchant
+    const valid = await this.getUserById(data.user_id);
+    if (!valid || Object.keys(valid).length === 0) {
+      throw new Error('Invalid merchant.')
+    }
+
+    // remove user slug
+    delete data.user_slug;
+
+    if (typeof data.user_password === 'undefined') {
+      delete data.user_password;
+    } else {
+      data.user_password = md5(data.user_password);
+    }
+
+    // init model
+    let model = Model.build(data);
+
+    // save merchant
+    return model.update();
+  }
+
+  /**
+   * Login user process
+   * 
+   * @param {Object} obj
+   * @param {String} type
+   */
+  async loginUser (obj, type = 'admin') {
+    // build model
+    let user = Model.build(obj);
+
+    // validate data
+    const errors = user.getLoginErrors();
+    if (Object.keys(errors).length > 0) {
+      throw Exception.setValidations(
+        this.LOGIN_FAILED,
+        errors
+      );
+    }
+
+    // format passsword
+    user.user_password = md5(user.user_password);
+
+    // get user
+    let query = this.getUserLogin(user)
+      .where('user_type', type);
+
+    const auth = await query.get();
+
+    // if user does not exists
+    if (!auth || Object.keys(auth).length === 0) {
+      throw Exception.setValidations(
+        this.LOGIN_FAILED,
+        { user_slug: 'Your email address or password is incorrect' }
+      );
+    }
+
+    return auth;
+  }
+
+  /**
+   * Remove User
+   *
+   * @param id <integer>
+   */
+  remove(id) {
+    let obj = {
+      user_active: 0
+    };
+
+    // init model
+    let model = Model.build(obj);
+
+    // bulk remove?
+    if (Array.isArray(id)) {
+      model.whereIn('user_id', id);
+    } else {
+      model.where('user_id', id);
+    }
+
+    // remove user
+    return model.update();
+  }
+
+  /**
+   * Restore User
+   *
+   * @param id <integer>
+   */
+  restore(id) {
+    let obj = {
+      user_active: 1
+    };
+
+    // init model
+    let model = Model.build(obj);
+
+    // bulk remove?
+    if (Array.isArray(id)) {
+      model.whereIn('user_id', id);
+    } else {
+      model.where('user_id', id);
+    }
+
+    // remove user
+    return model.update();
+  }
+}
