@@ -47,13 +47,14 @@ router.post('/admin/login', async (req, res, next) => {
 /**
  * POST Admin Login
  */
-router.post('/merchant/login', async (req, res, next) => {
+router.post('/login', async (req, res, next) => {
+  console.log(req.body);
   // wrap async
   try {
     // login user
     const auth = await User.Model
       .service()
-      .loginUser(req.body, 'merchant');
+      .loginUser(req.body);
 
     // token payload
     const payload = {
@@ -61,8 +62,7 @@ router.post('/merchant/login', async (req, res, next) => {
       user_firstname: auth.user_firstname,
       user_lastname: auth.user_lastname,
       user_slug: auth.user_slug,
-      store_id: auth.store_id,
-      store_name: auth.store_name
+      user_type: auth.user_type,
     };
 
     // create token
@@ -78,7 +78,7 @@ router.post('/merchant/login', async (req, res, next) => {
   }
 
   // log history
-  await History.log('Logged as Merchant', req);
+  await History.log('Logged as User', req);
 });
 
 module.exports = router;

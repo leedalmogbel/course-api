@@ -18,17 +18,6 @@ module.exports = class User extends DB {
   }
 
   /**
-   * Get user/store by id
-   * 
-   * @param {int} id 
-   */
-  getUserStoreById (id) {
-    // get user by id
-    return this.where('user_id', id)
-    .get();
-  }
-
-  /**
    * return user email
    * 
    * @param {string} email 
@@ -57,7 +46,7 @@ module.exports = class User extends DB {
   }
 
   /**
-   * Search merchants
+   * Search users
    * 
    * @param {object} data
    */
@@ -100,12 +89,12 @@ module.exports = class User extends DB {
 
     // get q for query
     if ('q' in data) {
-      data.q.merchant_search = '%' + data.q.merchant_search + '%';
+      data.q.user_search = '%' + data.q.user_search + '%';
       this.andWhere(function () {
-        this.where('user_firstname', 'like', data.q.merchant_search)
-          .orWhere('user_lastname', 'like', data.q.merchant_search)
-          .orWhere('user_type', 'like', data.q.merchant_search)
-          .orWhere('user_slug', 'like', data.q.merchant_search)
+        this.where('user_firstname', 'like', data.q.user_search)
+          .orWhere('user_lastname', 'like', data.q.user_search)
+          .orWhere('user_type', 'like', data.q.user_search)
+          .orWhere('user_slug', 'like', data.q.user_search)
       })
     }
 

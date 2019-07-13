@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const Template = require('@module/Template');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {

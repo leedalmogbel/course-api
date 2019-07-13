@@ -8,12 +8,12 @@ exports.seed = function(knex, Promise) {
       return knex('users')
         .insert([
           {
-            user_firstname: 'Merchant',
+            user_firstname: 'User',
             user_lastname: 'Admin',
             user_slug: 'joe@doe.com',
             user_password: md5('123'),
             user_facebook: '',
-            user_type: 'merchant',
+            user_type: 'user',
             user_meta: null,
             user_active: 1,
             user_created: '2019-06-18 00:00:00',

@@ -1,8 +1,7 @@
 const Model = require('./Model');
 const Exception = require('./../Util/BaseException');
 const md5 = require('md5');
-const StoreModel = require('@module/Store/Model');
-const Store = require('@module/Store');
+
 
 module.exports = class Service extends Model {
   /**
@@ -28,12 +27,12 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Create Merchant
+   * Create User
    * 
    * @param {Object} data
    * @param {file} image
    */
-  async createMerchant (data, image) {
+  async createUser (data, image) {
     // validate
     const errors = this.getCreateErrors(data);
     if (Object.keys(errors).length > 0) {
@@ -54,7 +53,7 @@ module.exports = class Service extends Model {
       );
     }
 
-    data.user_type = 'merchant';
+    data.user_type = 'user';
     // encrypt password
     data.user_password = md5(data.user_password);
 
@@ -67,11 +66,11 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Update Merchant
+   * Update User
    * 
    * @param {object} data
    */
-  async updateMerchant (data) {
+  async updateUser (data) {
 
     // validate fields
     const errors = this.getUpdateErrors(data);
@@ -79,10 +78,10 @@ module.exports = class Service extends Model {
       throw Exception.setValidations(this.UPDATE_FAILED, errors);
     }
 
-    // check if valid merchant
+    // check if valid user
     const valid = await this.getUserById(data.user_id);
     if (!valid || Object.keys(valid).length === 0) {
-      throw new Error('Invalid merchant.')
+      throw new Error('Invalid user.')
     }
 
     // remove user slug
@@ -97,7 +96,7 @@ module.exports = class Service extends Model {
     // init model
     let model = Model.build(data);
 
-    // save merchant
+    // save user
     return model.update();
   }
 
@@ -107,7 +106,7 @@ module.exports = class Service extends Model {
    * @param {Object} obj
    * @param {String} type
    */
-  async loginUser (obj, type = 'admin') {
+  async loginUser (obj, type = null) {
     // build model
     let user = Model.build(obj);
 
@@ -122,10 +121,14 @@ module.exports = class Service extends Model {
 
     // format passsword
     user.user_password = md5(user.user_password);
-
+    
     // get user
-    let query = this.getUserLogin(user)
-      .where('user_type', type);
+    let query = this.getUserLogin(user);
+
+    console.log(type)
+    if (type) {
+      query = query.where('user_type', type);
+    }
 
     const auth = await query.get();
 

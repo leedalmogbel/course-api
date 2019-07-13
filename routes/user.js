@@ -1,7 +1,6 @@
 const express  = require('express');
 const router   = express.Router();
 const User     = require('@module/User');
-const Store    = require('@module/Store');
 const History  = require('@module/Util/History');
 
 // set multer storage
@@ -70,7 +69,7 @@ router.get('/detail/:user_id', async (req, res, next) => {
     // get user by user id
     const user = await User.Model
       .service()
-      .getUserStoreById(userId);
+      .getUserById(userId);
 
     delete user.user_password;
    
@@ -117,7 +116,7 @@ router.post('/create', upload.single('store_image'), async (req, res, next) => {
  * @param {string} path
  * @param {function} callback
  */
-router.post('/user/update', upload.single('store_image'), async (req, res, next) => {
+router.post('/update', upload.single('store_image'), async (req, res, next) => {
   // wrap async
   try {
     // update user
