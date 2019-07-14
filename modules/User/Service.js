@@ -53,7 +53,7 @@ module.exports = class Service extends Model {
       );
     }
 
-    data.user_type = 'user';
+    data.user_type = 'brand';
     // encrypt password
     data.user_password = md5(data.user_password);
 
