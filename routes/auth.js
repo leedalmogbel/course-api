@@ -26,7 +26,7 @@ router.post('/admin/login', async (req, res, next) => {
     };
 
     // create token
-    token = jwt.sign(payload, settings.secret, { expiresIn: '24h' });
+    // token = jwt.sign(payload, settings.secret, { expiresIn: '24h' });
 
     // remove user id from payload
     delete payload.user_id;
@@ -34,7 +34,7 @@ router.post('/admin/login', async (req, res, next) => {
     // return response
     res.send({
       error: false,
-      data: { token, user: payload }
+      data: { user: payload }
     });
   } catch (e) {
     next(e);
@@ -48,14 +48,13 @@ router.post('/admin/login', async (req, res, next) => {
  * POST Admin Login
  */
 router.post('/login', async (req, res, next) => {
-  console.log(req.body);
   // wrap async
   try {
     // login user
     const auth = await User.Model
-      .service()
-      .loginUser(req.body);
-
+    .service()
+    .loginUser(req.body);
+    
     // token payload
     const payload = {
       user_id: auth.user_id,
@@ -66,19 +65,19 @@ router.post('/login', async (req, res, next) => {
     };
 
     // create token
-    const token = jwt.sign(payload, settings.secret, { expiresIn: '24h' });
+    // const token = jwt.sign(payload, settings.secret, { expiresIn: '24h' });
 
     // return response
     res.send({
       error: false,
-      data: { token, user: payload }
+      results: payload
     });
   } catch (e) {
     next(e);
   }
 
   // log history
-  await History.log('Logged as User', req);
+  // await History.log('Logged as User', req);
 });
 
 module.exports = router;

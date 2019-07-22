@@ -40,10 +40,9 @@ router.get('/search', async function(req, res, next) {
     // send data to api side
     res.send({
       error: false,
-      data: {
-        rows: users,
-        total
-      }
+      results:users,
+      total
+      
     });
   } catch (e) {
     next(e);
