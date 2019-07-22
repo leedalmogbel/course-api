@@ -97,7 +97,7 @@ router.post('/create', upload.single('store_image'), async (req, res, next) => {
       .createUser(req.body, req.file);
 
     // log history
-    await History.log('Created User', req);
+    // await History.log('Created User', req);
 
     // return response
     res.send({
@@ -125,7 +125,7 @@ router.post('/update', upload.single('store_image'), async (req, res, next) => {
     
 
     // log history
-    await History.log('Updated User', req);
+    // await History.log('Updated User', req);
 
     // return response
     res.send({
@@ -160,7 +160,7 @@ router.get('/remove/:user_id', async (req, res, next) => {
       .remove(userId);
 
     // log history
-    await History.log('Removed User', req);
+    // await History.log('Removed User', req);
 
     // return response
     res.send({
@@ -195,7 +195,7 @@ router.get('/restore/:user_id', async (req, res, next) => {
       .restore(userId);
 
     // log history
-    await History.log('Restored User', req);
+    // await History.log('Restored User', req);
 
     // return response
     res.send({
@@ -218,7 +218,7 @@ router.post('/bulk/remove', async (req, res, next) => {
       .remove(req.body.user_ids);
 
     // log history
-    await History.log('Bulk Removed User', req);
+    // await History.log('Bulk Removed User', req);
 
     // return response
     res.send({
@@ -241,7 +241,7 @@ router.post('/bulk/restore', async (req, res, next) => {
       .restore(req.body.user_ids);
 
     // log history
-    await History.log('Bulk Restored User', req);
+    // await History.log('Bulk Restored User', req);
 
     // return response
     res.send({
