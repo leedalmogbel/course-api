@@ -82,19 +82,67 @@ router.get('/detail/:user_id', async (req, res, next) => {
   }
 });
 
+router.post('/check/email', async (req, res, next) => {
+  // set user slug
+
+  const user_slug = req.body.user_slug;
+
+  try {
+    let exists = await User.Model
+      .service().checkEmail(user_slug);
+
+    // throw error if email already exists
+    if (Object.keys(exists).length > 0) {
+      // return response
+      res.send({
+        error: true,
+        message: 'Invalid Request.',
+        validation: { user_slug: 'Email already exists' }
+      });
+    }
+
+    // return response
+    res.send({
+      error: false,
+      data: exists
+    });
+  } catch (e) {
+    res.send({
+      error: true,
+      message: e.message,
+      validation: e.validation
+    });
+  }
+
+  return exists;
+});
+
 /**
  * POST: Create user
  *
  * @param {string} path
  * @param {function} callback
  */
-router.post('/create', upload.single('store_image'), async (req, res, next) => {
+router.post('/create', async (req, res, next) => {
+
+  let errors = User.Model
+    .service().getCreateErrors(req.body);
+
+  // has errors?
+  if (Object.keys(errors).length) {
+    return res.send({
+      error: true,
+      message: 'Invalid Request',
+      validation: errors
+    });
+  }
+
   // wrap async
   try {
     // create new user
     const user = await User.Model
       .service()
-      .createUser(req.body, req.file);
+      .createUser(req.body);
 
     // log history
     // await History.log('Created User', req);
@@ -105,7 +153,11 @@ router.post('/create', upload.single('store_image'), async (req, res, next) => {
       data: user
     });
   } catch (e) {
-    next(e);
+    res.send({
+      error: true,
+      message: e.message,
+      validation: e.validation
+    });
   }
 });
 

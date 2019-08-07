@@ -47,13 +47,12 @@ module.exports = class Service extends Model {
 
     // throw error if email already exists
     if (Object.keys(exists).length > 0) {
-      throw Exception.setValidations(
-        this.CREATE_FAILED,
-        { user_slug: 'Email already exists'}
-      );
+      throw {
+        message: 'Invalid Request.',
+        validation: { user_slug: 'Email already exists' }
+      }
     }
 
-    data.user_type = 'brand';
     // encrypt password
     data.user_password = md5(data.user_password);
 
@@ -63,6 +62,22 @@ module.exports = class Service extends Model {
     
     // return
     return userObj;
+  }
+  
+  async checkEmail(email) {
+    // check if user exist
+    let exists = await this.getUserByEmail(email);
+
+    // throw error if email already exists
+    if (Object.keys(exists).length > 0) {
+      throw {
+        message: 'Invalid Request.',
+        validation: { user_slug: 'Email already exists' }
+      }
+    }
+
+    // return
+    return exists;
   }
 
   /**

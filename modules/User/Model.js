@@ -133,15 +133,6 @@ module.exports = class User extends DB {
   getCreateErrors (data) {
     let errors = {};
 
-    if (!Helpers.isset(data.user_firstname) ||
-      !Helpers.isStringNotEmpty(data.user_firstname)) {
-      errors.user_firstname = 'First name is required';
-    }
-
-    if (!Helpers.isset(data.user_lastname) ||
-      !Helpers.isStringNotEmpty(data.user_lastname)) {
-      errors.user_lastname = 'Last name is required';
-    }
 
     if (!Helpers.isset(data.user_slug) ||
       !Helpers.isValidEmail(data.user_slug)) {
@@ -149,12 +140,8 @@ module.exports = class User extends DB {
     }
 
     if (!Helpers.isset(data.user_password)) {
-      errors.user_password = 'Password cannot be empty';
+      errors.user_password = 'Password is required';
     }
-
-    // if (data.user_password.toString().length < 8) {
-    //   errors.user_slug = 'Password must be atleast 8';
-    // }
 
     return errors;
   }
