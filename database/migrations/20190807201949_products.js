@@ -3,6 +3,8 @@ exports.up = function(knex, Promise) {
   return knex.schema
     .createTable('products', function (table) {
       table.increments('product_id').unsigned().primary();
+      table.integer('product_user').notNull();
+      table.integer('product_category').notNull();
       table.string('product_title').default('');
       table.string('product_description').default('');
       table.json('product_images').nullable();
