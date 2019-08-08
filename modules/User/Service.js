@@ -33,14 +33,15 @@ module.exports = class Service extends Model {
    * @param {file} image
    */
   async createUser (data, image) {
+    console.log('data')
     // validate
-    const errors = this.getCreateErrors(data);
-    if (Object.keys(errors).length > 0) {
-      throw Exception.setValidations(
-        this.CREATE_FAILED,
-        errors
-      );
-    }
+    // const errors = this.getCreateErrors(data);
+    // if (Object.keys(errors).length > 0) {
+    //   throw Exception.setValidations(
+    //     this.CREATE_FAILED,
+    //     errors
+    //   );
+    // }
 
     // check if user exist
     let exists = await this.getUserByEmail(data.user_slug);

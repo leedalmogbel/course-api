@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
     .createTable('courses', function (table) {
       table.increments('course_id').unsigned().primary();
       table.integer('course_user').notNull();
-      table.integer('course_category').notNull();
+      table.integer('course_category').nullable();
       table.string('course_title').default('');
       table.string('course_description').default('');
       table.json('course_image').nullable();
