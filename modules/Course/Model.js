@@ -3,7 +3,7 @@ const DB = require('../Util/DB');
 const knex = require('knex');
 
 /**
- * @author Leed Almogbel <leedalmogbel@gmail.com>
+ *
  * Course Object
  */
 module.exports = class Course extends DB {
@@ -103,8 +103,11 @@ module.exports = class Course extends DB {
 
   /**
    * Validate create course
+   * 
+   * @param {Object} data
+   * @param {File} image
    */
-  getCreateErrors (data) {
+  getCreateErrors (data, image) {
     let errors = {};
 
     if (!Helpers.isset(data.course_title) ||
@@ -117,8 +120,11 @@ module.exports = class Course extends DB {
 
   /**
    * Validate update user
+   * 
+   * @param {Object} data
+   * @param {File} image
    */
-  getUpdateErrors (data) {
+  getUpdateErrors (data, image) {
     let errors = {};
     if (!Helpers.isset(data.course_title) ||
       !Helpers.isStringNotEmpty(data.course_title)) {

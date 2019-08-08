@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Course = require('@module/Course');
 
+// set multer storage
+const multer = require('multer');
+const upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'public/uploads/courses'),
+    filename: (req, file, cb) =>
+      cb(null, Date.now() + '.' + file.originalname.split('.').pop())
+  })
+});
+
 /**
  * GET: Search Courses
  * 
