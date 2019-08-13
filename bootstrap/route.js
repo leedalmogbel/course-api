@@ -8,6 +8,7 @@ const quiz = require('@routes/quiz');
 const badge = require('@routes/badge');
 const message = require('@routes/message');
 const reference = require('@routes/reference');
+const product = require('@routes/product');
 
 /**
  * Bootstrap Route
@@ -25,4 +26,5 @@ module.exports = (app, express) => {
   app.use('/badge', badge);
   app.use('/message', message);
   app.use('/reference', reference);
+  app.use('/product', product);
 };
