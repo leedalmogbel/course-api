@@ -201,7 +201,6 @@ module.exports = class DB extends DBWrapper {
   async findOne (raw) {
     raw = raw ? true : false; 
     this.from(this.table);
-
     // if primary is set
     if (this[this.primary]) {
       // filter by primary

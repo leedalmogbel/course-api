@@ -76,6 +76,10 @@ module.exports = class DBWrapper {
       case 'y': // replace `y` with `ies`
       return `${model.substring(0, model.length - 1)}ies`;
       break;
+      // case z
+      case 'z': // add `es` after `z`
+      return `${model.substring(0, model.length)}es`;
+      break;
       // case s
       case 's': // replace `s` with `es`
       return `${model.substring(0, model.length - 1)}es`;

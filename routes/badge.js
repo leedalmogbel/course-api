@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const Course = require('@module/Course');
+const Badge = require('@module/Badge');
+const History  = require('@module/Util/History');
 
 // set multer storage
 const multer = require('multer');
 const upload = multer({ storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads/courses'),
+    destination: (req, file, cb) => cb(null, 'public/uploads/badges'),
     filename: (req, file, cb) =>
       cb(null, Date.now() + '.' + file.originalname.split('.').pop())
   })
 });
 
 /**
- * GET: Search Courses
+ * GET: Search Badges
  * 
  * @param {string} path
  * @param {function} callback
@@ -22,17 +23,17 @@ router.get('/search', async (req, res, next) => {
   query = req.query || {};
   // wrap async
   try {
-    // search courses model
-    let model = Course.Model
+    // search badges model
+    let model = Badge.Model
       .service()
-      .searchCourses(query);
+      .searchBadges(query);
 
-    // get courses
-    const courses = await model.all();
+    // get Badges
+    const badges = await model.all();
     // get count
     const count = await model
-      .searchCourses(query)
-      .countDistinct('course_id as total')
+      .searchBadges(query)
+      .countDistinct('badge_id as total')
       .limit(0)
       .offset(0)
       .first();
@@ -44,7 +45,7 @@ router.get('/search', async (req, res, next) => {
     res.send({
       error: false,
       data: {
-        rows: courses,
+        rows: badges,
         total
       }
     });
@@ -54,26 +55,26 @@ router.get('/search', async (req, res, next) => {
 });
 
 /**
- * POST: Create courses
+ * POST: Create Badge
  *
  * @param {string} path
  * @param {function} callback
  */
-router.post('/create', upload.single('course_image'), async (req, res, next) => {
+router.post('/create', upload.single('badge_image'), async (req, res, next) => {
   // wrap async
   try {
-    // create new courses
-    const course = await Course.Model
+    // create new Badge
+    const badge = await Badge.Model
       .service()
-      .createCourse(req.body, req.file);
+      .createBadge(req.body, req.file);
 
     // log history
-    await History.log('Created course', req);
+    await History.log('Created Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -81,26 +82,26 @@ router.post('/create', upload.single('course_image'), async (req, res, next) => 
 });
 
 /**
- * POST: Update Course
+ * POST: Update Badge
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.post('/update', upload.single('course_image'), async (req, res, next) => {
+router.post('/update', upload.single('badge_image'), async (req, res, next) => {
   // wrap async
   try {
-    // update course
-    const course = await Course.Model
+    // update badge
+    const badge = await Badge.Model
       .service()
-      .updateCourse(req.body, req.file);
+      .updateBadge(req.body, req.file);
 
     // log history
-    await History.log('Updated Course', req);
+    await History.log('Updated Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -108,30 +109,30 @@ router.post('/update', upload.single('course_image'), async (req, res, next) => 
 });
 
 /**
- * GET: Fetch Course
+ * GET: Fetch Badge
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/detail/:course_id', async (req, res, next) => {
-  // set course id
-  const courseId = parseInt(req.params.course_id);
+router.get('/detail/:badge_id', async (req, res, next) => {
+  // set badge id
+  const badgeId = parseInt(req.params.badge_id);
 
   // wrap async
   try {
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('badge_id' in req.params)) {
+      throw new Error('Invalid badge id');
     }
 
-    // get course by course id
-    const course = await Course.Model
+    // get badge by badge id
+    const badge = await Badge.Model
       .service()
-      .getCourseById(courseId);
+      .getBadgeById(badgeId);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -140,34 +141,34 @@ router.get('/detail/:course_id', async (req, res, next) => {
 
 
 /**
- * GET: course remove
+ * GET: badge remove
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/remove/:course_id', async (req, res, next) => {
+router.get('/remove/:badge_id', async (req, res, next) => {
   // wrap async
   try {
     // check id
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('badge_id' in req.params)) {
+      throw new Error('Invalid badge id');
     }
 
     // set brad id
-    const courseId = parseInt(req.params.course_id);
+    const badgeId = parseInt(req.params.badge_id);
 
-    // get course
-    const course = await Course.Model
+    // get badge
+    const badge = await Badge.Model
       .service()
-      .remove(courseId);
+      .remove(badgeId);
 
     // log history
-    await History.log('Removed Course', req);
+    await History.log('Removed Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -176,33 +177,33 @@ router.get('/remove/:course_id', async (req, res, next) => {
 
 
 /**
- * GET: course restore
+ * GET: badge restore
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/restore/:course_id', async (req, res, next) => {
+router.get('/restore/:badge_id', async (req, res, next) => {
   // wrap async
   try {
     // check id
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('badge_id' in req.params)) {
+      throw new Error('Invalid badge id');
     }
 
-    // set course id
-    const courseId = parseInt(req.params.course_id);
-    // get course
-    const course = await Course.Model
+    // set badge id
+    const badgeId = parseInt(req.params.badge_id);
+    // get badge
+    const badge = await Badge.Model
       .service()
-      .restore(courseId);
+      .restore(badgeId);
 
     // log history
-    await History.log('Restored Course', req);
+    await History.log('Restored Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -210,22 +211,22 @@ router.get('/restore/:course_id', async (req, res, next) => {
 });
 
 /**
- * POST course bulk remove
+ * POST badge bulk remove
  */
 router.post('/bulk/remove', async (req, res, next) => {
   try {
-    // get courses
-    const course = await Course.Model
+    // get badges
+    const badge = await Badge.Model
       .service()
-      .remove(req.body.course_ids);
+      .remove(req.body.badge_ids);
 
     // log history
-    await History.log('Bulk Removed Course', req);
+    await History.log('Bulk Removed Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);
@@ -233,22 +234,22 @@ router.post('/bulk/remove', async (req, res, next) => {
 });
 
 /**
- * POST course bulk restore
+ * POST badge bulk restore
  */
 router.post('/bulk/restore', async (req, res, next) => {
   try {
-    // get courses
-    const course = await Course.Model
+    // get badges
+    const badge = await Badge.Model
       .service()
-      .restore(req.body.course_ids);
+      .restore(req.body.badge_ids);
 
     // log history
-    await History.log('Bulk Restored Course', req);
+    await History.log('Bulk Restored Badge', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: badge
     });
   } catch (e) {
     next(e);

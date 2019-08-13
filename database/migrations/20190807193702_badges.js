@@ -3,7 +3,7 @@ exports.up = function(knex, Promise) {
   return knex.schema
     .createTable('badges', function (table) {
       table.increments('badge_id').unsigned().primary();
-      table.integer('badge_course').notNull();
+      table.integer('badge_user').notNull();
       table.string('badge_title').default('');
       table.string('badge_description').default('');
       table.json('badge_image').nullable();

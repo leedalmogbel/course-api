@@ -9,8 +9,8 @@ module.exports = class Service extends Model {
     super();
 
     // class constants and variables
-    this.CREATE_FAILED = 'Create course failed.';
-    this.UPDATE_FAILED = 'Update course failed.';
+    this.CREATE_FAILED = 'Create quiz failed.';
+    this.UPDATE_FAILED = 'Update quiz failed.';
   }
 
   /**
@@ -24,12 +24,12 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Create Course
+   * Create Quiz
    * 
    * @param {Object} data
    * @param {file} image
    */
-  async createCourse (data, image) {
+  async createQuiz (data, image) {
     // validate
     const errors = this.getCreateErrors(data);
     if (Object.keys(errors).length > 0) {
@@ -39,14 +39,14 @@ module.exports = class Service extends Model {
       );
     }
 
-    // check if Course exist
-    let exists = await this.getCourseByTitle(data.course_title);
+    // check if Quiz exist
+    let exists = await this.getQuizByQuestion(data.quiz_question);
 
     // throw error if title already exists
     if (Object.keys(exists).length > 0) {
       throw Exception.setValidations(
         this.CREATE_FAILED,
-        { course_title: 'title already exists'}
+        { quiz_question: 'Question already exists'}
       );
     }
 
@@ -57,11 +57,11 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Update Course
+   * Update Quiz
    * 
    * @param {object} data
    */
-  async updateCourse (data) {
+  async updateQuiz (data) {
 
     // validate fields
     const errors = this.getUpdateErrors(data);
@@ -69,27 +69,27 @@ module.exports = class Service extends Model {
       throw Exception.setValidations(this.UPDATE_FAILED, errors);
     }
 
-    // check if valid Course
-    const valid = await this.getCourseById(data.course_id);
+    // check if valid Quiz
+    const valid = await this.getQuizById(data.quiz_id);
     if (!valid || Object.keys(valid).length === 0) {
-      throw new Error('Invalid course.')
+      throw new Error('Invalid quiz.')
     }
 
     // init model
     let model = Model.build(data);
 
-    // save course
+    // save quiz
     return model.update();
   }
 
   /**
-   * Remove course
+   * Remove quiz
    *
    * @param id <integer>
    */
   remove(id) {
     let obj = {
-      course_active: 0
+      quiz_active: 0
     };
 
     // init model
@@ -97,23 +97,23 @@ module.exports = class Service extends Model {
 
     // bulk remove?
     if (Array.isArray(id)) {
-      model.whereIn('course_id', id);
+      model.whereIn('quiz_id', id);
     } else {
-      model.where('course_id', id);
+      model.where('quiz_id', id);
     }
 
-    // remove course
+    // remove quiz
     return model.update();
   }
 
   /**
-   * Restore course
+   * Restore quiz
    *
    * @param id <integer>
    */
   restore(id) {
     let obj = {
-      course_active: 1
+      quiz_active: 1
     };
 
     // init model
@@ -121,12 +121,12 @@ module.exports = class Service extends Model {
 
     // bulk remove?
     if (Array.isArray(id)) {
-      model.whereIn('course_id', id);
+      model.whereIn('quiz_id', id);
     } else {
-      model.where('course_id', id);
+      model.where('quiz_id', id);
     }
 
-    // remove course
+    // remove quiz
     return model.update();
   }
 }

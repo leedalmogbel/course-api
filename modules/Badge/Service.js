@@ -9,8 +9,8 @@ module.exports = class Service extends Model {
     super();
 
     // class constants and variables
-    this.CREATE_FAILED = 'Create course failed.';
-    this.UPDATE_FAILED = 'Update course failed.';
+    this.CREATE_FAILED = 'Create badge failed.';
+    this.UPDATE_FAILED = 'Update badge failed.';
   }
 
   /**
@@ -24,12 +24,12 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Create Course
+   * Create Badge
    * 
    * @param {Object} data
    * @param {file} image
    */
-  async createCourse (data, image) {
+  async createBadge (data, image) {
     // validate
     const errors = this.getCreateErrors(data);
     if (Object.keys(errors).length > 0) {
@@ -39,14 +39,14 @@ module.exports = class Service extends Model {
       );
     }
 
-    // check if Course exist
-    let exists = await this.getCourseByTitle(data.course_title);
+    // check if Badge exist
+    let exists = await this.getBadgeByTitle(data.badge_title);
 
     // throw error if title already exists
     if (Object.keys(exists).length > 0) {
       throw Exception.setValidations(
         this.CREATE_FAILED,
-        { course_title: 'title already exists'}
+        { badge_title: 'Title already exists'}
       );
     }
 
@@ -57,11 +57,11 @@ module.exports = class Service extends Model {
   }
 
   /**
-   * Update Course
+   * Update Badge
    * 
    * @param {object} data
    */
-  async updateCourse (data) {
+  async updateBadge (data) {
 
     // validate fields
     const errors = this.getUpdateErrors(data);
@@ -69,27 +69,27 @@ module.exports = class Service extends Model {
       throw Exception.setValidations(this.UPDATE_FAILED, errors);
     }
 
-    // check if valid Course
-    const valid = await this.getCourseById(data.course_id);
+    // check if valid Badge
+    const valid = await this.getBadgeById(data.badge_id);
     if (!valid || Object.keys(valid).length === 0) {
-      throw new Error('Invalid course.')
+      throw new Error('Invalid badge.')
     }
 
     // init model
     let model = Model.build(data);
 
-    // save course
+    // save badge
     return model.update();
   }
 
   /**
-   * Remove course
+   * Remove badge
    *
    * @param id <integer>
    */
   remove(id) {
     let obj = {
-      course_active: 0
+      badge_active: 0
     };
 
     // init model
@@ -97,23 +97,23 @@ module.exports = class Service extends Model {
 
     // bulk remove?
     if (Array.isArray(id)) {
-      model.whereIn('course_id', id);
+      model.whereIn('badge_id', id);
     } else {
-      model.where('course_id', id);
+      model.where('badge_id', id);
     }
 
-    // remove course
+    // remove badge
     return model.update();
   }
 
   /**
-   * Restore course
+   * Restore badge
    *
    * @param id <integer>
    */
   restore(id) {
     let obj = {
-      course_active: 1
+      badge_active: 1
     };
 
     // init model
@@ -121,12 +121,12 @@ module.exports = class Service extends Model {
 
     // bulk remove?
     if (Array.isArray(id)) {
-      model.whereIn('course_id', id);
+      model.whereIn('badge_id', id);
     } else {
-      model.where('course_id', id);
+      model.where('badge_id', id);
     }
 
-    // remove course
+    // remove badge
     return model.update();
   }
 }

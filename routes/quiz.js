@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const Course = require('@module/Course');
+const Quiz = require('@module/Quiz');
+const History  = require('@module/Util/History');
 
 // set multer storage
 const multer = require('multer');
 const upload = multer({ storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads/courses'),
+    destination: (req, file, cb) => cb(null, 'public/uploads/quizes'),
     filename: (req, file, cb) =>
       cb(null, Date.now() + '.' + file.originalname.split('.').pop())
   })
 });
 
 /**
- * GET: Search Courses
+ * GET: Search Quizes
  * 
  * @param {string} path
  * @param {function} callback
@@ -22,17 +23,17 @@ router.get('/search', async (req, res, next) => {
   query = req.query || {};
   // wrap async
   try {
-    // search courses model
-    let model = Course.Model
+    // search quizes model
+    let model = Quiz.Model
       .service()
-      .searchCourses(query);
+      .searchQuizes(query);
 
-    // get courses
-    const courses = await model.all();
+    // get quizes
+    const quizes = await model.all();
     // get count
     const count = await model
-      .searchCourses(query)
-      .countDistinct('course_id as total')
+      .searchQuizes(query)
+      .countDistinct('quiz_id as total')
       .limit(0)
       .offset(0)
       .first();
@@ -44,7 +45,7 @@ router.get('/search', async (req, res, next) => {
     res.send({
       error: false,
       data: {
-        rows: courses,
+        rows: quizes,
         total
       }
     });
@@ -54,26 +55,26 @@ router.get('/search', async (req, res, next) => {
 });
 
 /**
- * POST: Create courses
+ * POST: Create Quiz
  *
  * @param {string} path
  * @param {function} callback
  */
-router.post('/create', upload.single('course_image'), async (req, res, next) => {
+router.post('/create', upload.single('quiz_banner'), async (req, res, next) => {
   // wrap async
   try {
-    // create new courses
-    const course = await Course.Model
+    // create new Quiz
+    const quiz = await Quiz.Model
       .service()
-      .createCourse(req.body, req.file);
+      .createQuiz(req.body, req.file);
 
     // log history
-    await History.log('Created course', req);
+    await History.log('Created Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -81,26 +82,26 @@ router.post('/create', upload.single('course_image'), async (req, res, next) => 
 });
 
 /**
- * POST: Update Course
+ * POST: Update Quiz
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.post('/update', upload.single('course_image'), async (req, res, next) => {
+router.post('/update', upload.single('quiz_banner'), async (req, res, next) => {
   // wrap async
   try {
-    // update course
-    const course = await Course.Model
+    // update quiz
+    const quiz = await Quiz.Model
       .service()
-      .updateCourse(req.body, req.file);
+      .updateQuiz(req.body, req.file);
 
     // log history
-    await History.log('Updated Course', req);
+    await History.log('Updated Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -108,30 +109,30 @@ router.post('/update', upload.single('course_image'), async (req, res, next) => 
 });
 
 /**
- * GET: Fetch Course
+ * GET: Fetch Quiz
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/detail/:course_id', async (req, res, next) => {
-  // set course id
-  const courseId = parseInt(req.params.course_id);
+router.get('/detail/:quiz_id', async (req, res, next) => {
+  // set quiz id
+  const quizId = parseInt(req.params.quiz_id);
 
   // wrap async
   try {
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('quiz_id' in req.params)) {
+      throw new Error('Invalid quiz id');
     }
 
-    // get course by course id
-    const course = await Course.Model
+    // get quiz by quiz id
+    const quiz = await Quiz.Model
       .service()
-      .getCourseById(courseId);
+      .getQuizById(quizId);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -140,34 +141,34 @@ router.get('/detail/:course_id', async (req, res, next) => {
 
 
 /**
- * GET: course remove
+ * GET: quiz remove
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/remove/:course_id', async (req, res, next) => {
+router.get('/remove/:quiz_id', async (req, res, next) => {
   // wrap async
   try {
     // check id
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('quiz_id' in req.params)) {
+      throw new Error('Invalid quiz id');
     }
 
     // set brad id
-    const courseId = parseInt(req.params.course_id);
+    const quizId = parseInt(req.params.quiz_id);
 
-    // get course
-    const course = await Course.Model
+    // get quiz
+    const quiz = await Quiz.Model
       .service()
-      .remove(courseId);
+      .remove(quizId);
 
     // log history
-    await History.log('Removed Course', req);
+    await History.log('Removed Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -176,33 +177,33 @@ router.get('/remove/:course_id', async (req, res, next) => {
 
 
 /**
- * GET: course restore
+ * GET: quiz restore
  * 
  * @param {string} path
  * @param {function} callback
  */
-router.get('/restore/:course_id', async (req, res, next) => {
+router.get('/restore/:quiz_id', async (req, res, next) => {
   // wrap async
   try {
     // check id
-    if (!('course_id' in req.params)) {
-      throw new Error('Invalid course id');
+    if (!('quiz_id' in req.params)) {
+      throw new Error('Invalid quiz id');
     }
 
-    // set course id
-    const courseId = parseInt(req.params.course_id);
-    // get course
-    const course = await Course.Model
+    // set quiz id
+    const quizId = parseInt(req.params.quiz_id);
+    // get quiz
+    const quiz = await Quiz.Model
       .service()
-      .restore(courseId);
+      .restore(quizId);
 
     // log history
-    await History.log('Restored Course', req);
+    await History.log('Restored Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -210,22 +211,22 @@ router.get('/restore/:course_id', async (req, res, next) => {
 });
 
 /**
- * POST course bulk remove
+ * POST quiz bulk remove
  */
 router.post('/bulk/remove', async (req, res, next) => {
   try {
-    // get courses
-    const course = await Course.Model
+    // get quizes
+    const quiz = await Quiz.Model
       .service()
-      .remove(req.body.course_ids);
+      .remove(req.body.quiz_ids);
 
     // log history
-    await History.log('Bulk Removed Course', req);
+    await History.log('Bulk Removed Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);
@@ -233,22 +234,22 @@ router.post('/bulk/remove', async (req, res, next) => {
 });
 
 /**
- * POST course bulk restore
+ * POST quiz bulk restore
  */
 router.post('/bulk/restore', async (req, res, next) => {
   try {
-    // get courses
-    const course = await Course.Model
+    // get quizes
+    const quiz = await Quiz.Model
       .service()
-      .restore(req.body.course_ids);
+      .restore(req.body.quiz_ids);
 
     // log history
-    await History.log('Bulk Restored Course', req);
+    await History.log('Bulk Restored Quiz', req);
 
     // return response
     res.send({
       error: false,
-      data: course
+      data: quiz
     });
   } catch (e) {
     next(e);

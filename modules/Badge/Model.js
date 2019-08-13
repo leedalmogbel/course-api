@@ -1,36 +1,35 @@
 const Helpers = require('../Util/Helpers');
 const DB = require('../Util/DB');
-const knex = require('knex');
 
 /**
  *
- * Course Object
+ * Badge Object
  */
-module.exports = class Course extends DB {
+module.exports = class Badge extends DB {
   /**
-   * Get course by id
+   * Get Badge by id
    * 
    * @param {int} id 
    */
-  getCourseById (id) {
-    return this.where('course_id', id).get();
+  getBadgeById (id) {
+    return this.where('badge_id', id).get();
   }
 
   /**
-   * return course title
+   * return badge title
    * 
    * @param {string} title 
    */
-  getCourseByTitle (title) {
-    return this.where('course_title', title).get();
+  getBadgeByTitle (title) {
+    return this.where('badge_title', title).get();
   }
 
   /**
-   * Search courses
+   * Search badges
    * 
    * @param {object} data
    */
-  searchCourses (data = {}) {
+  searchQuizes (data = {}) {
     let helper = new Helpers();
 
     let filter = {};
@@ -69,15 +68,15 @@ module.exports = class Course extends DB {
 
     // get q for query
     if ('q' in data) {
-      data.q.course_search = '%' + data.q.course_search + '%';
+      data.q.badge_search = '%' + data.q.badge_search + '%';
       this.andWhere(function () {
-        this.where('course_title', 'like', data.q.course_search)
+        this.where('badge_title', 'like', data.q.badge_search)
       })
     }
 
     // filter active
-    if (!('course_active' in filter) || !filter['course_active']) {
-      filter.course_active = 1;
+    if (!('badge_active' in filter) || !filter['badge_active']) {
+      filter.badge_active = 1;
     }
 
     // loop out the filters
@@ -102,7 +101,7 @@ module.exports = class Course extends DB {
   }
 
   /**
-   * Validate create course
+   * Validate create badge
    * 
    * @param {Object} data
    * @param {File} image
@@ -110,25 +109,25 @@ module.exports = class Course extends DB {
   getCreateErrors (data, image) {
     let errors = {};
 
-    if (!Helpers.isset(data.course_title) ||
-      !Helpers.isStringNotEmpty(data.course_title)) {
-      errors.course_title = 'Title is required';
+    if (!Helpers.isset(data.badge_title) ||
+      !Helpers.isStringNotEmpty(data.badge_title)) {
+      errors.badge_title = 'Title is required';
     }
 
     return errors;
   }
 
   /**
-   * Validate update user
+   * Validate update badge
    * 
    * @param {Object} data
    * @param {File} image
    */
   getUpdateErrors (data, image) {
     let errors = {};
-    if (!Helpers.isset(data.course_title) ||
-      !Helpers.isStringNotEmpty(data.course_title)) {
-      errors.course_title = 'Title is required';
+    if (!Helpers.isset(data.badge_title) ||
+      !Helpers.isStringNotEmpty(data.badge_title)) {
+      errors.badge_title = 'Title is required';
     }
 
     return errors;
