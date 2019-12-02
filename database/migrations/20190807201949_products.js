@@ -10,9 +10,12 @@ exports.up = function(knex, Promise) {
       table.json('product_images').nullable();
       table.float('product_price').nullable();
       table.float('product_weight').nullable();
-      table.float('product_thc').nullable();
-      table.float('product_cbd').nullable();
+      table.json('product_thc').nullable();
+      table.json('product_cbd').nullable();
+      table.string('product_species').default('');
       table.string('product_effect').default('');
+      table.string('product_flavor').default('');
+      table.string('product_activity').default('');
       table.integer('product_active').default(1);
       table.dateTime('product_created').notNull();
       table.dateTime('product_updated').notNull();
