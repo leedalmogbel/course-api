@@ -37,10 +37,8 @@ router.get('/search', async (req, res, next) => {
     // return response
     res.send({
       error: false,
-      data: {
-        rows: products,
-        total
-      }
+      results: products,
+      total
     });
   } catch (e) {
     next(e);
