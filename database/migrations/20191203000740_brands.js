@@ -10,7 +10,6 @@ exports.up = function(knex, Promise) {
         table.string('brand_address_city', 255).default('');
         table.string('brand_address_state', 255).default('');
         table.string('brand_social_tag', 255).default('');
-        table.float('product_price').nullable();
         table.json('brand_meta').nullable();
         table.integer('brand_active').default(1);
         table.dateTime('brand_created').notNull();
