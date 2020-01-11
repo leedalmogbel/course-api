@@ -86,9 +86,10 @@ router.post('/check/email', async (req, res, next) => {
   // set user slug
 
   const user_slug = req.body.user_slug;
+  let exists = {};
 
   try {
-    let exists = await User.Model
+    exists = await User.Model
       .service().checkEmail(user_slug);
 
     // throw error if email already exists
