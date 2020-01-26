@@ -56,13 +56,15 @@ router.post('/login', async (req, res, next) => {
     .loginUser(req.body);
     
     // token payload
-    const payload = {
-      user_id: auth.user_id,
-      user_firstname: auth.user_firstname,
-      user_lastname: auth.user_lastname,
-      user_slug: auth.user_slug,
-      user_type: auth.user_type,
-    };
+    // const payload = {
+    //   user_id: auth.user_id,
+    //   user_firstname: auth.user_firstname,
+    //   user_lastname: auth.user_lastname,
+    //   user_slug: auth.user_slug,
+    //   user_type: auth.user_type,
+    // };
+    // get all auth info
+    const payload = auth;
 
     // create token
     // const token = jwt.sign(payload, settings.secret, { expiresIn: '24h' });
