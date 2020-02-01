@@ -152,20 +152,20 @@ module.exports = class User extends DB {
   getUpdateErrors (data) {
     let errors = {};
 
-    if (!Helpers.isset(data.user_firstname) ||
-      !Helpers.isStringNotEmpty(data.user_firstname)) {
-      errors.user_firstname = 'First name is required';
-    }
+    // if (!Helpers.isset(data.user_firstname) ||
+    //   !Helpers.isStringNotEmpty(data.user_firstname)) {
+    //   errors.user_firstname = 'First name is required';
+    // }
 
-    if (!Helpers.isset(data.user_lastname) ||
-      !Helpers.isStringNotEmpty(data.user_lastname)) {
-      errors.user_lastname = 'Last name is required';
-    }
+    // if (!Helpers.isset(data.user_lastname) ||
+    //   !Helpers.isStringNotEmpty(data.user_lastname)) {
+    //   errors.user_lastname = 'Last name is required';
+    // }
 
-    if (!Helpers.isset(data.user_slug) ||
-      !Helpers.isValidEmail(data.user_slug)) {
-      errors.user_slug = 'Email is required';
-    }
+    // if (!Helpers.isset(data.user_slug) ||
+    //   !Helpers.isValidEmail(data.user_slug)) {
+    //   errors.user_slug = 'Email is required';
+    // }
 
     // if (!Helpers.isset(data.user_password)) {
     //   errors.user_slug = 'Password cannot be empty';
