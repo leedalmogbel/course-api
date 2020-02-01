@@ -1,6 +1,6 @@
 
 exports.up = function(knex, Promise) {
-return knex.schema.alterTable('products', (table) => {
+  return knex.schema.alterTable('products', (table) => {
     // product_thc
     table
       .float('product_thc')

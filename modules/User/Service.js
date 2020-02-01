@@ -87,7 +87,6 @@ module.exports = class Service extends Model {
    * @param {object} data
    */
   async updateUser (data) {
-
     // validate fields
     const errors = this.getUpdateErrors(data);
     if (Object.keys(errors).length > 0) {
