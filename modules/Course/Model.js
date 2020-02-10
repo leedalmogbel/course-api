@@ -49,7 +49,7 @@ module.exports = class Course extends DB {
     // start
     if (('start' in data)
       && data.start
-      && helper.isInt(data.start)
+      // && helper.isInt(data.start)
     ) {
       start = parseInt(data.start);
     }
@@ -57,7 +57,7 @@ module.exports = class Course extends DB {
     // range
     if (('range' in data)
       && data.range
-      && helper.isInt(data.range)
+      // && helper.isInt(data.range)
     ) {
       range = parseInt(data.range);
     }
@@ -93,9 +93,11 @@ module.exports = class Course extends DB {
       this.orderBy(direction, sort);
     });
 
-    this
-      .limit(range)
-      .offset(start);
+    if (range > 0) {
+      this.limit(range)
+    }
+
+    this.offset(start);
 
     // get all
     return this
