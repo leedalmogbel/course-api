@@ -5,6 +5,7 @@ let User = require('@module/User')
 let { Builder, DB, Helpers } = require('@module/Util');
 const fs = require("fs");
 const fastcsv = require("fast-csv");
+const md5 = require('md5');
 
 (async () => {
   // let json = {
@@ -51,7 +52,7 @@ const fastcsv = require("fast-csv");
             lat: csvData[index][8],
             long: csvData[index][9]
           },
-          user_password: 'changemelater123',
+          user_password: md5('changemelater123'),
           user_type: 'retailer'
         };
         try {

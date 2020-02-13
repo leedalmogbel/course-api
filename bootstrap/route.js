@@ -10,6 +10,7 @@ const message = require('@routes/message');
 const reference = require('@routes/reference');
 const product = require('@routes/product');
 const post = require('@routes/post');
+const survey = require('@routes/survey');
 
 /**
  * Bootstrap Route
@@ -29,4 +30,5 @@ module.exports = (app, express) => {
   app.use('/reference', reference);
   app.use('/product', product);
   app.use('/post', post);
+  app.use('/survey', survey);
 };
