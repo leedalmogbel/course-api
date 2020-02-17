@@ -42,13 +42,13 @@ module.exports = class Service extends Model {
     // check if Episode exist
     let exists = await this.getEpisodeByTitle(data.episode_title);
 
-    // throw error if title already exists
-    if (Object.keys(exists).length > 0) {
-      throw Exception.setValidations(
-        this.CREATE_FAILED,
-        { epsode_title: 'title already exists' }
-      );
-    }
+    // throw error if title already exists (NOT NEEDED)
+    // if (Object.keys(exists).length > 0) {
+    //   throw Exception.setValidations(
+    //     this.CREATE_FAILED,
+    //     { episode_title: 'title already exists' }
+    //   );
+    // }
 
     let model = Model.build(data);
     
