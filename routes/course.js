@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Course = require('@module/Course');
+const Episode = require('@module/Episode');
 
 // set multer storage
 const multer = require('multer');
@@ -63,12 +64,22 @@ router.post('/create', upload.single('course_image'), async (req, res, next) => 
   // wrap async
   try {
     // create new courses
-    const course = await Course.Model
+    let course = await Course.Model
       .service()
       .createCourse(req.body, req.file);
 
+    if ('episode_title' in course) {
+      course = {
+        ...course,
+        episode_course: course.course_id,
+      }
+
+      await Episode.Model
+        .service()
+        .createEpisode(course, null);
+    }
     // log history
-    await History.log('Created course', req);
+    // await History.log('Created course', req);
 
     // return response
     res.send({
