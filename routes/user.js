@@ -175,7 +175,6 @@ router.post('/update', upload.single('store_image'), async (req, res, next) => {
     const user = await User.Model
       .service()
       .updateUser(req.body);
-    
 
     // log history
     // await History.log('Updated User', req);
@@ -183,7 +182,8 @@ router.post('/update', upload.single('store_image'), async (req, res, next) => {
     // return response
     res.send({
       error: false,
-      data: {...user}
+      // data: {...user}
+      data: req.body
     });
   } catch (e) {
     next(e);
@@ -295,6 +295,123 @@ router.post('/bulk/restore', async (req, res, next) => {
 
     // log history
     // await History.log('Bulk Restored User', req);
+
+    // return response
+    res.send({
+      error: false,
+      data: user
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * POST users invite
+ */
+router.post('/invite', async (req, res, next) => {
+  // wrap async
+  try {
+    console.log('params: ', req.body)
+    // check email
+    if (!('user_slug' in req.body)) {
+      throw new Error('Email is required');
+    }
+
+    // get invitee info
+    const invitee = await User.Model
+      .service()
+      .checkEmailExists(req.body.user_slug);
+
+    console.log('invitee: ', invitee)
+
+    // get inviter info
+    const user = await User.Model
+      .service()
+      .getUserDetail(req.body.parent_id);
+    
+    console.log('iser: ', user)
+
+    // compare user_type:
+    // if user = , parent must be brand
+    // if user = retailer, parent must be budtender
+
+    // if invited, create new entry to user_parent
+    // user_id = invitee, parent_id = inviter
+
+    // log history
+    // await History.log('Invite User', req);
+
+    // return response
+    res.send({
+      error: false,
+      // data: user
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * POST users accept
+ */
+router.post('/accept', async (req, res, next) => {
+  // wrap async
+  try {
+    // get invitee info
+    const invitee = await User.Model
+      .service()
+      .checkEmailExists(req.body.user_slug);
+
+    console.log('invitee: ', invitee)
+
+    // get inviter info
+    const user = await User.Model
+      .service()
+      .getUserDetail(req.body.parent_id);
+
+    // compare user_type:
+    // if user = , parent must be brand
+    // if user = retailer, parent must be budtender
+
+    // if accepted, update user_parent_flag into 1
+
+    // return response
+    res.send({
+      error: false,
+      data: user
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * POST users decline
+ */
+router.post('/decline', async (req, res, next) => {
+  // wrap async
+  try {
+    // get invitee info
+    const invitee = await User.Model
+      .service()
+      .checkEmailExists(req.body.user_slug);
+
+    console.log('invitee: ', invitee)
+
+    // get inviter info
+    const user = await User.Model
+      .service()
+      .getUserDetail(req.body.parent_id);
+
+    // compare user_type:
+    // if user = , parent must be brand
+    // if user = retailer, parent must be budtender
+
+    // if declined, delete user_parent entry
+
+    // log history
+    // await History.log('Removed User', req);
 
     // return response
     res.send({

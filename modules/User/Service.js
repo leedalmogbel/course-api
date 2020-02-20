@@ -33,7 +33,6 @@ module.exports = class Service extends Model {
    * @param {file} image
    */
   async createUser (data, image) {
-    console.log('data')
     // validate
     // const errors = this.getCreateErrors(data);
     // if (Object.keys(errors).length > 0) {
@@ -65,6 +64,11 @@ module.exports = class Service extends Model {
     return userObj;
   }
   
+  /**
+   * Check Unique Email
+   * 
+   * @param {Object} data
+   */
   async checkEmail(email) {
     // check if user exist
     let exists = await this.getUserByEmail(email);
@@ -79,6 +83,44 @@ module.exports = class Service extends Model {
 
     // return
     return exists;
+  }
+
+  /**
+   * Check Email Exists
+   * 
+   * @param {Object} data
+   */
+  async checkEmailExists(email) {
+    // check if user exist
+    let exists = await this.getUserByEmail(email);
+
+    // throw error if email already exists
+    if (!Object.keys(exists).length > 0) {
+      throw {
+        message: 'Invalid Request.',
+        validation: { user_slug: 'Email does not exist' }
+      }
+    }
+
+    // return
+    return exists;
+  }
+
+  /**
+   * Get User Detail
+   * 
+   * @param {int} id
+   */
+  async getUserDetail (id) {
+    // check if valid user
+    const user = await this.getUserById(id);
+    if (!user || Object.keys(user).length === 0) {
+      throw new Error('Invalid user.')
+    }
+
+    console.log('valid: ', user)
+    
+    return user;
   }
 
   /**
@@ -140,7 +182,6 @@ module.exports = class Service extends Model {
     // get user
     let query = this.getUserLogin(user);
 
-    console.log(type)
     if (type) {
       query = query.where('user_type', type);
     }
