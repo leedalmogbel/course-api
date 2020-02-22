@@ -8,41 +8,30 @@ const knex = require('knex');
  */
 module.exports = class User_parent extends DB {
   /**
+   * Get invitee by id
+   * 
+   * @param {int} id 
+   */
+  getInviteeById (id) {
+    // get user by id
+    return this.where('user_id', id).get();
+  }
+
+  /**
    * Get user by id
    * 
    * @param {int} id 
    */
   getUserById (id) {
     // get user by id
-    return this.where('user_id', id).get();
-  }
-
-  /**
-   * return user email
-   * 
-   * @param {string} email 
-   */
-  getUserByEmail (email) {
-    // get user by email
-    return this.where('user_slug', email).get();
+    return this.where('parent_id', id).get();
   }
 
   /**
    * return active user
    */
-  getActiveUser () {
-    return this.where('user_active', 1);
-  }
-
-  /**
-   * Get Login Data
-   * 
-   * @param {Object} data
-   */
-  getUserLogin(data) {
-    return this.where('user_slug', data.user_slug)
-      .where('user_password', data.user_password)
-      .where('user_active', 1);
+  getAcceptedInvite () {
+    return this.where('user_parent_active', 1);
   }
 
   /**
@@ -127,86 +116,5 @@ module.exports = class User_parent extends DB {
 
     // get all
     return this
-  }
-
-  /**
-   * Validate create user
-   */
-  getCreateErrors (data) {
-    let errors = {};
-
-
-    if (!Helpers.isset(data.user_slug) ||
-      !Helpers.isValidEmail(data.user_slug)) {
-      errors.user_slug = 'Email is required';
-    }
-
-    if (!Helpers.isset(data.user_password)) {
-      errors.user_password = 'Password is required';
-    }
-
-    return errors;
-  }
-
-  /**
-   * Validate update user
-   */
-  getUpdateErrors (data) {
-    let errors = {};
-
-    // if (!Helpers.isset(data.user_firstname) ||
-    //   !Helpers.isStringNotEmpty(data.user_firstname)) {
-    //   errors.user_firstname = 'First name is required';
-    // }
-
-    // if (!Helpers.isset(data.user_lastname) ||
-    //   !Helpers.isStringNotEmpty(data.user_lastname)) {
-    //   errors.user_lastname = 'Last name is required';
-    // }
-
-    // if (!Helpers.isset(data.user_slug) ||
-    //   !Helpers.isValidEmail(data.user_slug)) {
-    //   errors.user_slug = 'Email is required';
-    // }
-
-    // if (!Helpers.isset(data.user_password)) {
-    //   errors.user_slug = 'Password cannot be empty';
-    // }
-
-    // if (String(data.user_password).length < 8) {
-    //   errors.user_password = 'Password must be atleast 8';
-    // }
-
-    return errors;
-  }
-
-  /**
-   * Validate login data
-   */
-  getLoginErrors () {
-    let errors = {};
-
-    // parse data as string
-    this.user_slug = String(this.user_slug);
-    this.user_password = String(this.user_password);
-
-    // required user slug
-    if (!Helpers.isset(this.user_slug)
-      || !Helpers.isStringNotEmpty(this.user_slug)) {
-      errors.user_slug = 'Email address is required.';
-    }
-
-    // valid user slug
-    if (!Helpers.isValidEmail(this.user_slug)) {
-      errors.user_slug = 'Email address is invalid.';
-    }
-
-    // required passsword
-    if (!Helpers.isset(this.user_password)
-      || !Helpers.isStringNotEmpty(this.user_password)) {
-      errors.user_password = 'Password is required.';
-    }
-
-    return errors;
   }
 }

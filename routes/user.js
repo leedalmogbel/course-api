@@ -1,7 +1,8 @@
-const express  = require('express');
-const router   = express.Router();
-const User     = require('@module/User');
-const History  = require('@module/Util/History');
+const express     = require('express');
+const router      = express.Router();
+const User        = require('@module/User');
+const User_parent = require('@module/User_parent');
+const History     = require('@module/Util/History');
 
 // set multer storage
 const multer = require('multer');
@@ -312,7 +313,6 @@ router.post('/bulk/restore', async (req, res, next) => {
 router.post('/invite', async (req, res, next) => {
   // wrap async
   try {
-    console.log('params: ', req.body)
     // check email
     if (!('user_slug' in req.body)) {
       throw new Error('Email is required');
@@ -323,21 +323,42 @@ router.post('/invite', async (req, res, next) => {
       .service()
       .checkEmailExists(req.body.user_slug);
 
-    console.log('invitee: ', invitee)
-
     // get inviter info
     const user = await User.Model
       .service()
       .getUserDetail(req.body.parent_id);
-    
-    console.log('iser: ', user)
 
     // compare user_type:
     // if user = , parent must be brand
     // if user = retailer, parent must be budtender
+    if (
+      (user.user_type !== 'brand'
+      && user.user_type !== 'retailer'
+      && invitee.user_type !== 'retailer'
+      && invitee.user_type !== 'budtender')
+      || (invitee.user_type === 'retailer' && user.user_type !== 'brand')
+      || (invitee.user_type === 'budtender' && user.user_type !== 'retailer')
+      || (invitee.user_type !== 'retailer' && user.user_type === 'brand')
+      || (invitee.user_type !== 'budtender' && user.user_type === 'retailer')
+    ) {
+      // return response
+      return res.send({
+        error: true,
+        message: "User is not permitted to do this action"
+      });
+    }
 
-    // if invited, create new entry to user_parent
+    // prepare data to be inserted
+    let data = {
+      user_id: invitee.user_id,
+      parent_id: user.user_id,
+    }
+
+    // create new entry to user_parent
     // user_id = invitee, parent_id = inviter
+    const user_parent = await User_parent.Model
+      .service()
+      .inviteUser(data);
 
     // log history
     // await History.log('Invite User', req);
@@ -345,7 +366,7 @@ router.post('/invite', async (req, res, next) => {
     // return response
     res.send({
       error: false,
-      // data: user
+      data: user_parent
     });
   } catch (e) {
     next(e);
