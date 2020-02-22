@@ -140,6 +140,13 @@ module.exports = class DB extends DBWrapper {
     if (this[this.primary] != null && typeof this[this.primary] != 'undefined') {
       this.where(this.primary, this[this.primary]);
     }
+
+    // if there's multiple where statement
+    if (Object.keys(this.where_statement).length > 0 
+      && typeof(this.where_statement) != 'undefined'
+    ) {
+      this.where(this.where_statement);
+    }
     
     // call update
     return update.call(this, settings);
