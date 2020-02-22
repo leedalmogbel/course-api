@@ -117,8 +117,6 @@ module.exports = class Service extends Model {
     if (!user || Object.keys(user).length === 0) {
       throw new Error('Invalid user.')
     }
-
-    console.log('valid: ', user)
     
     return user;
   }
