@@ -405,34 +405,23 @@ router.post('/accept/:parent_id', async (req, res, next) => {
 /**
  * POST users decline
  */
-router.post('/decline', async (req, res, next) => {
+router.post('/decline/:parent_id', async (req, res, next) => {
   // wrap async
   try {
-    // get invitee info
-    const invitee = await User.Model
-      .service()
-      .checkEmailExists(req.body.user_slug);
-
-    console.log('invitee: ', invitee)
-
-    // get inviter info
-    const user = await User.Model
-      .service()
-      .getUserDetail(req.body.parent_id);
-
-    // compare user_type:
-    // if user = , parent must be brand
-    // if user = retailer, parent must be budtender
+    let data = {
+      parent_id: req.params.parent_id,
+      user_id: req.body.user_id,
+    }
 
     // if declined, delete user_parent entry
-
-    // log history
-    // await History.log('Removed User', req);
+    const user_parent = await User_parent.Model
+      .service()
+      .declineUser(data);
 
     // return response
     res.send({
       error: false,
-      data: user
+      message: "Successfully declined user!"
     });
   } catch (e) {
     next(e);

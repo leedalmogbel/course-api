@@ -58,9 +58,30 @@ module.exports = class Service extends Model {
    * @param {object} data
    */
   async declineUser (data) {
-    console.log('data: ', data.user_slug)
-
     // if valid user, remove to user_parent
+    // tell if both parent and user id exists
+    const exists = await this.getDetailByBothId(data);
+
+    // return if do not exists
+    if (!exists
+      || Object.keys(exists).length === 0
+      || exists.user_parent_active == 1
+    ) {
+      throw new Error('Invalid user.')
+    }
+
+    // delete user_parent entry
+    data.where_statement = {
+      parent_id: data.parent_id,
+      user_id: data.user_id,
+      user_parent_active: 0,
+    }
+
+    // init model
+    let model = Model.build(data);
+
+    // if valid user, delete entry in user_parent
+    return model.del();
   }
   
   /**
