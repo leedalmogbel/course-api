@@ -124,6 +124,27 @@ module.exports = class DB extends DBWrapper {
   }
 
   /**
+   * delete entry in database
+   *
+   * @param criteria <object|string>Z
+   */
+  async del () {
+    if (this[this.primary] != null && typeof this[this.primary] != 'undefined') {
+      this.where(this.primary, this[this.primary]);
+    }
+
+    // if there's multiple where statement
+    if (Object.keys(this.where_statement).length > 0 
+      && typeof(this.where_statement) != 'undefined'
+    ) {
+      this.where(this.where_statement);
+    }
+    
+    // call update
+    return del.call(this);
+  }
+
+  /**
    * update database
    *
    * @param criteria <object|string>Z
@@ -298,7 +319,7 @@ module.exports = class DB extends DBWrapper {
  */
 async function update (settings) {
   // if updated at is not set
-  if (typeof settings[`${this.singluar}_updated`] == 'undefined' || !settings[`${this.singular}_updated`]) {
+  if (typeof settings[`${this.singular}_updated`] == 'undefined' || !settings[`${this.singular}_updated`]) {
     // get time stamp now from helper
     settings[`${this.singular}_updated`] = Helpers.timeStampNow();
   }
@@ -330,7 +351,6 @@ async function update (settings) {
       // set transaction
       this.query = this.query.transacting(this.trx);
     }
-
     // exec query
     let res = await this.query.update(setting);
     // return result
@@ -339,6 +359,7 @@ async function update (settings) {
     throw new DBException(err);
   }
 }
+
 /**
  * insert to database
  *
@@ -435,4 +456,32 @@ async function composeSettings () {
 
   // return settings
   return settings;
+}
+
+/** 
+ * update database
+ *
+ * @param criteria <object|string>
+ */
+async function del () {
+  try {
+    // if query is null
+    // init query
+    if (this.query == null) {
+      this.query = this.conn(this.table);
+    }
+    
+    // if self.trx is set, this means this is a transaction query
+    if (typeof this.trx != 'undefined' && this.trx) {
+      // set transaction
+      this.query = this.query.transacting(this.trx);
+    }
+
+    // exec query
+    let res = await this.query.del();
+    // return result
+    return res;
+  } catch (err) {
+    throw new DBException(err);
+  }
 };
