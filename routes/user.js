@@ -329,8 +329,8 @@ router.post('/invite', async (req, res, next) => {
       .getUserDetail(req.body.parent_id);
 
     // compare user_type:
-    // if user = , parent must be brand
-    // if user = retailer, parent must be budtender
+    // if user = retailer, parent must be brand
+    // if user = budtender, parent must be retailer
     if (
       (user.user_type !== 'brand'
       && user.user_type !== 'retailer'
@@ -376,31 +376,26 @@ router.post('/invite', async (req, res, next) => {
 /**
  * POST users accept
  */
-router.post('/accept', async (req, res, next) => {
+router.post('/accept/:parent_id', async (req, res, next) => {
   // wrap async
   try {
-    // get invitee info
-    const invitee = await User.Model
-      .service()
-      .checkEmailExists(req.body.user_slug);
-
-    console.log('invitee: ', invitee)
-
-    // get inviter info
-    const user = await User.Model
-      .service()
-      .getUserDetail(req.body.parent_id);
-
-    // compare user_type:
-    // if user = , parent must be brand
-    // if user = retailer, parent must be budtender
+    let data = {
+      parent_id: req.params.parent_id,
+      user_id: req.body.user_id,
+    }
 
     // if accepted, update user_parent_flag into 1
+    const user_parent = await User_parent.Model
+      .service()
+      .acceptUser(data);
+
+    // remove unnecessary data
+    delete data.where_statement;
 
     // return response
     res.send({
       error: false,
-      data: user
+      data: data
     });
   } catch (e) {
     next(e);
