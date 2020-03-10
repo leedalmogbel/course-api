@@ -69,7 +69,7 @@ module.exports = class Service extends Model {
    * 
    * @param {Object} data
    */
-  async checkEmail(email) {
+  async checkEmail (email) {
     // check if user exist
     let exists = await this.getUserByEmail(email);
 
@@ -90,7 +90,7 @@ module.exports = class Service extends Model {
    * 
    * @param {Object} data
    */
-  async checkEmailExists(email) {
+  async checkEmailExists (email) {
     // check if user exist
     let exists = await this.getUserByEmail(email);
 
@@ -243,5 +243,51 @@ module.exports = class Service extends Model {
 
     // remove user
     return model.update();
+  }
+
+  /**
+   * Forgot Password
+   * 
+   * @param {object} data
+   */
+  async forgotPassword (data) {
+    // validate fields
+    const errors = this.getForgotPasswordErrors(data);
+    if (Object.keys(errors).length > 0) {
+      throw Exception.setValidations(this.UPDATE_FAILED, errors);
+    }
+
+    // check if existing user user
+    const exists = await this.getUserByEmail(data.user_slug);
+
+    if (!exists || Object.keys(exists).length === 0) {
+      throw new Error('Invalid user.')
+    }
+
+    // combine user's data with updated password
+    // for the sake of updating
+    data = {...data, ...exists};
+
+    // remove unnecessary fields
+    delete data.user_confirm;
+    delete data.user_created;
+    delete data.user_updated;
+
+    if (typeof data.user_password === 'undefined') {
+      delete data.user_password;
+    } else {
+      data.user_password = md5(data.user_password);
+    }
+
+    // init model
+    let model = Model.build(data);
+
+    // save user
+    model.update();
+
+    // remove user password
+    delete data.user_password;
+
+    return data;
   }
 }

@@ -163,8 +163,9 @@ module.exports = class DB extends DBWrapper {
     }
 
     // if there's multiple where statement
-    if (Object.keys(this.where_statement).length > 0 
-      && typeof(this.where_statement) != 'undefined'
+    if (this.where_statement
+      && Object.keys(this.where_statement).length > 0 
+      && this.where_statement !== 'undefined'
     ) {
       this.where(this.where_statement);
     }

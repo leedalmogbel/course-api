@@ -85,13 +85,13 @@ router.get('/detail/:user_id', async (req, res, next) => {
 
 router.post('/check/email', async (req, res, next) => {
   // set user slug
-
   const user_slug = req.body.user_slug;
   let exists = {};
 
   try {
     exists = await User.Model
-      .service().checkEmail(user_slug);
+      .service()
+      .checkEmail(user_slug);
 
     // throw error if email already exists
     if (Object.keys(exists).length > 0) {
@@ -225,7 +225,6 @@ router.get('/remove/:user_id', async (req, res, next) => {
     next(e);
   }
 });
-
 
 /**
  * GET: user restore
@@ -422,6 +421,76 @@ router.post('/decline/:parent_id', async (req, res, next) => {
     res.send({
       error: false,
       message: "Successfully declined user!"
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * POST: Forgot password (verify email)
+ *
+ * @param {string} path
+ * @param {function} callback
+ */
+router.post('/forgot', async (req, res, next) => {
+  // set user slug
+  const user_slug = req.body.user_slug;
+  let exists = {};
+
+  try {
+    exists = await User.Model
+      .service()
+      .checkEmailExists(user_slug);
+
+    // throw error if email already does not exists
+    if (Object.keys(exists).length === 0) {
+      // return response
+      res.send({
+        error: true,
+        message: 'Invalid Request.',
+        validation: { user_slug: 'Email does not exists' }
+      });
+    }
+
+    // return response
+    res.send({
+      error: false,
+      data: exists
+    });
+  } catch (e) {
+    res.send({
+      error: true,
+      message: e.message,
+      validation: e.validation
+    });
+  }
+
+  return exists;
+});
+
+/**
+ * POST: Forgot password
+ *
+ * @param {string} path
+ * @param {function} callback
+ */
+router.post('/forgot-password', async (req, res, next) => {
+  // wrap async
+  try {
+    // update user password ONLY
+    const user = await User.Model
+      .service()
+      .forgotPassword(req.body);
+
+    // log history
+    // await History.log('Updated User', req);
+
+    // return response
+    res.send({
+      error: false,
+      data: {...user}
+      // data: req.body
     });
   } catch (e) {
     next(e);

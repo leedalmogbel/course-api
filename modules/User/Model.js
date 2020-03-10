@@ -209,4 +209,29 @@ module.exports = class User extends DB {
 
     return errors;
   }
+
+  /**
+   * Validate forgot password
+   */
+  getForgotPasswordErrors (data) {
+    let errors = {};
+
+    if (!Helpers.isset(data.user_password)) {
+      errors.user_slug = 'Password cannot be empty';
+    }
+
+    if (!Helpers.isset(data.user_confirm)) {
+      errors.user_slug = 'Confirm Password cannot be empty';
+    }
+
+    if (String(data.user_password).length < 8) {
+      errors.user_password = 'Password must be atleast 8';
+    }
+
+    if (data.user_password !== data.user_confirm) {
+      errors.user_slug = 'Password does not match';
+    }
+    console.log('err: ', errors)
+    return errors;
+  }
 }
