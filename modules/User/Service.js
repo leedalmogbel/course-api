@@ -264,6 +264,15 @@ module.exports = class Service extends Model {
       throw new Error('Invalid user.')
     }
 
+    // delete existing password
+    delete exists.user_password;
+
+    if (typeof data.user_password === 'undefined') {
+      delete data.user_password;
+    } else {
+      data.user_password = md5(data.user_password);
+    }
+
     // combine user's data with updated password
     // for the sake of updating
     data = {...data, ...exists};
@@ -272,12 +281,6 @@ module.exports = class Service extends Model {
     delete data.user_confirm;
     delete data.user_created;
     delete data.user_updated;
-
-    if (typeof data.user_password === 'undefined') {
-      delete data.user_password;
-    } else {
-      data.user_password = md5(data.user_password);
-    }
 
     // init model
     let model = Model.build(data);
