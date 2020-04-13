@@ -37,7 +37,7 @@ module.exports = class Survey extends DB {
     let range = 10;
     let start = 0;
     let order = {};
-console.log('tae',data)
+
     // check if we have filter
     if (('filter' in data)
       && data.filter
